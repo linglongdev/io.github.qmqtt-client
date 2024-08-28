@@ -1,0 +1,37 @@
+version: "1"
+
+package:
+  id: io.github.qmqtt-client
+  name: qmqtt-client
+  version: 0.2.1.1
+  kind: app
+  description: |
+    MQTT Client GUI Written with Qt
+
+command:
+  - /opt/apps/io.github.qmqtt-client/files/bin/qmqtt-client
+
+base: org.deepin.foundation/23.0.0
+runtime: org.deepin.Runtime/23.0.1
+
+sources:
+  - kind: git
+    url: https://github.com/wjyrich/qmqtt-client.git
+    version: master
+    commit: ee1d911ba2e60dc0ba9127ce23c5468af5ce2ee4
+  - kind: git
+    url: https://github.com/emqx/qmqtt.git
+    version: master
+    commit: 39c3e8af25407e25590b511c1e9387deabe89bac
+build: |
+  cd /project/linglong/sources/qmqtt.git
+  mkdir build
+  cd build
+  cmake .. \
+        -DCMAKE_INSTALL_PREFIX=${PREFIX}
+  cmake --build . --target install -j$(nproc --all)
+
+  cd /project/linglong/sources/qmqtt-client.git
+  qmake -makefile PREFIX=${PREFIX} LIB_INSTALL_DIR=${PREFIX}/lib/${TRIPLET}
+  make -j$(nproc)
+  make install
